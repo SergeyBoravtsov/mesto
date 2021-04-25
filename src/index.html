@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesto</title>
+</head>
+
+<body class="page">
+    <div class="content">
+        <!-- Шапка -->
+        <header class="header">
+            <a href="#" class="header__logo" target="_self"></a> 
+        </header>
+
+        <main>
+            <section class="profile">
+                <img class="profile__avatar" 
+                src="<%=require('./images/cousteau.jpg')%>" alt="Фотография профиля">
+                <div class="profile__info">
+                    <div class="profile__name-and-button">
+                        <h1 class="profile__name">Жак-Ив Кусто</h1>
+                        <button type="button" class="profile__edit-button" aria-label="Редактировать профиль"></button>
+                    </div>
+                    <p class="profile__job">Исследователь океана</p>
+                </div>
+                <button type="button" class="profile__add-button"></button>
+            </section>
+
+            <section class="cards">
+                <ul class="cards__list">
+                     <!-- Контейнер для карточек mesto -->
+                </ul>        
+            </section>             
+        </main>
+
+        <!-- Подвал -->
+        <footer class="footer">
+            <p class="footer__copyright">©&nbsp;2020&nbsp;Mesto&nbsp;Russia</p>
+        </footer>
+    </div>
+
+    <!-- Попапы -->
+    <article class="popup popup_edit-profile">
+        <div class="popup__container">
+            <button type="button" class="popup__close"></button>
+            <form class="popup__form" name="edit-profile" id="edit-profile-form" novalidate>
+                    <h2 class="popup__title">Редактировать профиль</h2>
+                    <input type="text" name="name" id="username" class="popup__input" placeholder="Имя" minlength="2" maxlength="40" required> 
+                    <span id="username-error" class="popup__error"></span>
+                    <input type="text" name="job" id="userjob" class="popup__input" placeholder="О себе" minlength="2" maxlength="200" required>
+                    <span id="userjob-error" class="popup__error"></span>
+                    <button type="submit" name="save-profile" class="popup__button">Сохранить</button>
+            </form>
+        </div>
+    </article>
+
+    <article class="popup popup_add-card">
+        <div class="popup__container">
+            <button type="button" class="popup__close"></button>
+            <form class="popup__form" name="add-card" id="add-card-form" novalidate>
+                    <h2 class="popup__title">Новое место</h2>
+                    <input type="text" name="name" id="placename" class="popup__input" placeholder="Название" minlength="2" maxlength="30" required> 
+                    <span id="placename-error" class="popup__error"></span>
+                    <input type="url" name="link" id="imagelink" class="popup__input" placeholder="Ссылка на картинку" minlength="2" required>
+                    <span id="imagelink-error" class="popup__error"></span>
+                    <button type="submit" name="add-place" class="popup__button">Создать</button>
+            </form>
+        </div>
+    </article>
+
+    <article class="popup popup_big-image">
+        <div class="popup__container popup__container_big-image">
+            <button type="button" class="popup__close"></button>
+            <img class="popup__image" src="#" alt="default">
+            <p class="popup__caption"></p>
+        </div>
+    </article>
+
+    <!-- шаблон карточки -->
+    <template class="template">
+        <li class="card">
+            <img class="card__image" src="#" alt="default">
+            <button class="card__trash-button"></button>
+            <div class="card__mesto">
+                <h2 class="card__title"></h2>
+                <button type="button" class="card__like-button"></button>
+            </div>
+        </li>
+    </template>
+    
+</body>
+
+</html>
