@@ -7,11 +7,11 @@ export default class Card {
     this._url = data.link;
     this._cardId = data._id;
     this._likes = data.likes;
+    this._ownerId = data.owner._id;
     this._template = template;
     this._handleCardClick = handleCardClick;
     this._handleDeletionClick = handleDeletionClick;
-    this._handleLikeClick = handleLikeClick;
-    this.ownerId = data.owner._id; // публичное поле
+    this._handleLikeClick = handleLikeClick;    
   }
 
   _getTemplate() {
@@ -26,8 +26,8 @@ export default class Card {
       this._handleLikeClick();
     });
 
-    this._deletionButton.addEventListener("click", () => {
-      this._handleDeletionClick();
+    this._deletionButton.addEventListener("click", (event) => {
+      this._handleDeletionClick(event);
     });
 
     this._imageElement.addEventListener("click", () => {
@@ -72,5 +72,9 @@ export default class Card {
 
   updateLikeCounter() {
     this._likeCounter.textContent = this._likes.length;
+  }
+
+  isMine() {
+    return (this.myUserId === this._ownerId)
   }
 }

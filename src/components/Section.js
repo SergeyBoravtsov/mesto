@@ -4,7 +4,7 @@ export default class Section {
     this._container = document.querySelector(containerSelector);
   }
 
-  _clearContainer() {
+  clearContainer() {
     this._container.innerHTML = "";
   }
 
@@ -16,8 +16,11 @@ export default class Section {
     this._container.append(element);
   }
 
+  deleteItem(element) {
+    element.remove();
+  }
+
   renderItems(cards) {
-    this._clearContainer();
     cards.forEach((card) => {
       this._renderer(card);
     });

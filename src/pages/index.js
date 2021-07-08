@@ -80,21 +80,13 @@ const popupWithAddCardForm = new PopupWithForm(
   ".popup_add-card",
   (inputValues) => {
     popupAddCardSubmitButton.textContent = saving; // отобразить прелоадер
-
     api
       .addCard(inputValues)
-      .then((answer) => {
-        console.log(answer);
-        api
-          .getAllCards()
-          .then((data) => {
-            //console.log(data)
-            renderAllCards(data);
-            popupWithAddCardForm.close();
-            addNewCardFormValidator.blockSubmitButton();
-            popupAddCardSubmitButton.textContent = create; // убрать прелоадер
-          })
-          .catch((err) => console.error(err));
+      .then((addedCard) => {
+        renderAddedCard(addedCard);
+        popupWithAddCardForm.close();
+        addNewCardFormValidator.blockSubmitButton();
+        popupAddCardSubmitButton.textContent = create; // убрать прелоадер
       })
       .catch((err) => console.error(err));
   }
@@ -125,13 +117,14 @@ const popupWithEditAvatarForm = new PopupWithForm(
   ".popup_edit-avatar",
   (inputValue) => {
     popupEditAvatarSubmitButton.textContent = saving; // отобразить прелоадер
-    api.setAvatar(inputValue)
+    api
+      .setAvatar(inputValue)
       .then((answer) => {
-      user.setAvatar(answer.avatar);
-      popupWithEditAvatarForm.close();
-      popupEditAvatarSubmitButton.textContent = save; // убрать прелоадер
-    })
-    .catch((err) => console.error(err))
+        user.setAvatar(answer.avatar);
+        popupWithEditAvatarForm.close();
+        popupEditAvatarSubmitButton.textContent = save; // убрать прелоадер
+      })
+      .catch((err) => console.error(err));
   }
 );
 popupWithEditAvatarForm.setEventListeners(); //обвесить попап слушателями
@@ -139,21 +132,15 @@ popupWithEditAvatarForm.setEventListeners(); //обвесить попап сл�
 //создание объекта попапа подтверждения удаления карточки
 const deletionCardPopup = new PopupWithConfirmation(
   ".popup_confirm-card-deletion",
-  (id) => {
+  (id, node) => {
     popupDeleteCardSubmitButton.textContent = deletion; // отобразить прелоадер
     api
       .deleteCard(id)
       .then((answer) => {
-        console.log(answer);
-        api
-          .getAllCards()
-          .then((data) => {
-            //console.log(data)
-            renderAllCards(data);
-            deletionCardPopup.close();
-            popupDeleteCardSubmitButton.textContent = yes; // убрать прелоадер
-          })
-          .catch((err) => console.error(err));
+        console.log(answer); // ответ сервера "Пост удален"
+        deleteNode(node); // удалить разметку карточки
+        deletionCardPopup.close();
+        popupDeleteCardSubmitButton.textContent = yes; // убрать прелоадер
       })
       .catch((err) => console.error(err));
   }
@@ -171,8 +158,8 @@ function createCard(data) {
       handleCardClick: () => {
         bigImage.open(data);
       },
-      handleDeletionClick: () => {
-        deletionCardPopup.open(data);
+      handleDeletionClick: (event) => {
+        deletionCardPopup.open(data, event);
       },
       handleLikeClick: () => {
         if (!card.isLiked()) {
@@ -194,7 +181,7 @@ function createCard(data) {
     },
     ".template"
   );
-  card.myUserId = user.myId;
+  card.myUserId = user.myId; // записать мой ID в публичное поле каждой карточки
   return card;
 }
 
@@ -205,7 +192,7 @@ function renderAllCards(data) {
       renderer: (item) => {
         const cardObj = createCard(item);
         const cardView = cardObj.createCardElement();
-        if (cardObj.myUserId !== cardObj.ownerId) {
+        if (!cardObj.isMine()) {
           cardView
             .querySelector(".card__trash-button")
             .classList.add("card__trash-button_invisible");
@@ -215,7 +202,29 @@ function renderAllCards(data) {
     },
     ".cards__list"
   );
+  cardsList.clearContainer(); // очистить контейнер от разметки
   cardsList.renderItems(data); // применяем метод renderer для каждого объекта массива карточек
+}
+
+// функция отрисовки добавленной через попап карточки на основе объекта data, полученного с сервера
+function renderAddedCard(data) {
+  const cardsList = new Section(
+    {
+      renderer: (item) => {
+        const cardObj = createCard(item);
+        const cardView = cardObj.createCardElement();
+        cardsList.addItemPrepend(cardView);
+      },
+    },
+    ".cards__list"
+  );
+  cardsList.renderItems([data]); // применяем метод renderer для объекта карточки
+}
+
+// функция удаления узла разметки
+function deleteNode(node) {
+  const cardsList = new Section({}, ".cards__list");
+  cardsList.deleteItem(node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +240,6 @@ Promise.all([api.getProfileInfo(), api.getAllCards()]) // получить да�
   .catch((err) => {
     console.error(err);
   });
-
 
 editButton.addEventListener("click", () => {
   editProfileFormValidator.clearErrors();
